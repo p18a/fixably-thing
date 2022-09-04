@@ -1,20 +1,23 @@
 import React, { useEffect, useRef } from "react"
 import { select, scaleLinear, scaleBand, axisBottom, axisLeft } from "d3"
 import { StatusSummary } from "../hooks/useStatusSummaries"
+import s from "./SummariesChart.module.css"
 
 const drawChart = (statuses: StatusSummary[], chart: HTMLDivElement) => {
-  const total = statuses.reduce((acc, curr) => acc + curr.total, 0)
+  const total = statuses.reduce((acc, curr) => (curr.total > acc ? curr.total : acc), 0)
 
-  const margin = { top: 20, right: 30, bottom: 40, left: 90 },
-    width = 460 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom
+  const baseWidth = 460
+  const baseHeight = statuses.length * 70
+
+  const margin = { top: 20, right: 20, bottom: 60, left: 70 }
+  const width = baseWidth - margin.left - margin.right
+  const height = baseHeight - margin.top - margin.bottom
 
   select(chart).selectAll("*").remove()
 
   const svg = select(chart)
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
@@ -44,7 +47,9 @@ const drawChart = (statuses: StatusSummary[], chart: HTMLDivElement) => {
     .attr("y", (d) => y(d.description) ?? 0)
     .attr("width", (d) => x(d.total))
     .attr("height", y.bandwidth())
-    .attr("fill", "#2563eb")
+    .attr("fill", "#818cf8")
+
+  select(chart).selectAll("text").style("font-size", "14px")
 }
 
 interface SummariesChartProps {
@@ -60,5 +65,5 @@ export const SummariesChart = ({ statusSummaries }: SummariesChartProps) => {
     drawChart(statusSummaries, chart.current)
   }, [statusSummaries])
 
-  return <div ref={chart} />
+  return <div className={`${s.wrapper} w-full lg:w-96`} ref={chart} />
 }

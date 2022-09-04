@@ -1,0 +1,4 @@
+.shadow {
+  background: #ffffff;
+  box-shadow: 20px 20px 60px #cfcfd1, -20px -20px 60px #ffffff;
+}

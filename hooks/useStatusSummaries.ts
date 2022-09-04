@@ -52,8 +52,8 @@ export const useStatusSummaries = () => {
 
     const statusSummaries = await Promise.all(promises)
 
-    setLoading(false)
     setStatuses(statusSummaries.sort((a, b) => b.total - a.total))
+    setLoading(false)
   }, [])
 
   useEffect(() => {
