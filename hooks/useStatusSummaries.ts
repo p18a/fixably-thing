@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import * as RT from "runtypes"
 import { API_ROOT } from "../constants"
-import { createFormData } from "../utils/createFormData"
-import { getAuthToken } from "../utils/getAuthToken"
+import { createFormDataBody } from "../utils/createFormDataBody"
+import { getAuthHeaders } from "../utils/getAuthHeader"
 
 const StatusesResRT = RT.Array(
   RT.Record({
@@ -27,18 +27,18 @@ export const useStatusSummaries = () => {
   const [statuses, setStatuses] = useState<StatusSummary[]>([])
 
   const fetchSummaryData = useCallback(async () => {
-    const token = await getAuthToken()
+    const authHeaders = await getAuthHeaders()
 
     const statusesRes = await fetch(new URL("statuses", API_ROOT).toString(), {
-      headers: { "X-Fixably-Token": token },
+      ...authHeaders,
     })
 
     const statuses = StatusesResRT.check(await statusesRes.json())
 
     const promises = statuses.map(async (status) => {
       const searchRes = await fetch(new URL("search/statuses", API_ROOT).toString(), {
-        headers: { "X-Fixably-Token": token },
-        body: createFormData({ Criteria: status.description }),
+        ...authHeaders,
+        ...createFormDataBody({ Criteria: status.description }),
         method: "POST",
       })
 
